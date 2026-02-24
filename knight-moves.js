@@ -26,6 +26,9 @@ function knightMoves(coorStart, coorEnd) {
     throw Error;
   }
 
+  if (coorStart[0] === coorEnd[0] && coorStart[1] === coorEnd[1]) {
+    printResult();
+  }
   function withinBoard(coor) {
     if (coor[0] < 0 || coor[0] > 7) {
       return false;
@@ -96,107 +99,39 @@ function knightMoves(coorStart, coorEnd) {
   }
 
   const queue = [];
+  const route = [];
 
-  function traverse(coor) {
+  function checkIfIncludesCoor() {}
+
+  function traverse(coor, coorDes) {
     const nextMoves = possibleMoves(coor);
 
-    if (nextMoves.includes(coorEnd)) {
-      // print something...
+    if (nextMoves.checkIfIncludesCoor(coorDes)) {
+      // printResult();
+      route.unshift(coor);
     } else {
-      // all the possible next move can't get to the destination
+      // passedMoves.push(coor);
+      visitedGameboard[7 - coor[1]].push(coor[0]);
 
-      // now queue is full of possible 1 layer next moves
-      queue.push(...nextMoves);
-
-      // I passed the parameter coor, its next moves doesn't have what we want,
-      // so we dig into next level
-      passedMoves.push(coor);
-      visitedGameboard[coor[1]].push(coor[0]);
-
-      // I need to first check if the children of next layer has our destination.
-      for (let i = 0; i < nextMoves.length; i++) {
-        if (possibleMoves(nextMoves[i]).includes(coorEnd)) {
-          // second layer has the destination
-          return true;
-        } else {
-          // second layer doesn't have it
+      nextMoves.forEach((c) => {
+        if (!visitedGameboard[7 - c[1]].includes(c[0])) {
+          //
+          queue.push(c);
         }
-      }
-      // use graph
-    }
-  }
+      });
 
-  function traverse(coor) {
-    const nextMoves = possibleMoves(coor);
-
-    if (nextMoves.includes(coorEnd)) {
-      // print something...
-    } else {
-      // all the possible next move can't get to the destination
-
-      // now queue is full of possible 1 layer next moves
-      queue.push(...nextMoves);
-
-      // I passed the parameter coor, its next moves doesn't have what we want,
-      // so we dig into next level
-      passedMoves.push(coor);
-      visitedGameboard[coor[1]].push(coor[0]);
-
-      // I need to first check if the children of next layer has our destination.
-      if (checkNextLayer(nextMoves)) {
-        // print something
-      } else {
-        traverse(...queue);
-      }
-      // use graph
+      traverse(queue.shift(), coorDes);
     }
   }
 
   function checkNextLayer(arr) {
     for (let i = 0; i < arr.length; i++) {
-      if (possibleMoves(arr[i]).includes(coorEnd)) {
+      if (possibleMoves(arr[i]).checkIfIncludesCoor(coorEnd)) {
         return true;
       }
     }
     return false;
   }
-
-  const nextMoves = possibleMoves(coorStart);
-  if (nextMoves.includes(coorEnd)) {
-    //
-  } else {
-    nextMoves.forEach((c) => {
-      if (possibleMoves(c).includes(coorEnd)) {
-        //
-      } else {
-        passedMoves.push(c);
-        visitedGameboard[c[1]].push(c[0]);
-      }
-    });
-  }
-  // possibleMoves(coorStart).forEach((coor) => {
-  //   visitedGameboard[coor[1]].push(coor[0]);
-  // });
-
-  // while (!visitedGameboard[coorEnd[1]].includes(coorEnd[0])) {
-  //   //
-  //   for (let j = 0; j < visitedGameboard.length; j++) {
-  //     for (let i = 0; i < visitedGameboard[j].length; i++) {
-  //       //
-  //       if (passedMoves.includes([i, j])) {
-  //         continue;
-  //       }
-
-  //       possibleMoves([i, j]).forEach((coor) => {
-  //         if (!passedMoves.includes(coor)) {
-  //           visitedGameboard[coor[1]].push(coor[0]);
-  //         }
-  //       });
-
-  //       passedMoves.push([i, j]);
-  //     }
-  //   }
-  // }
 
   printResult();
 }
