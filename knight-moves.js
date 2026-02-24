@@ -102,13 +102,18 @@ function knightMoves(coorStart, coorEnd) {
   const route = [];
 
   function checkIfIncludesCoor() {}
+  function checkArrEquals() {}
 
   function traverse(coor, coorDes) {
+    // if (checkArrEquals(coor, coorEnd)) {
+    //   return coor;
+    // }
+
     const nextMoves = possibleMoves(coor);
 
     if (nextMoves.checkIfIncludesCoor(coorDes)) {
       // printResult();
-      route.unshift(coor);
+      return coor;
     } else {
       // passedMoves.push(coor);
       visitedGameboard[7 - coor[1]].push(coor[0]);
@@ -121,6 +126,15 @@ function knightMoves(coorStart, coorEnd) {
       });
 
       traverse(queue.shift(), coorDes);
+    }
+  }
+
+  function getRoute(coorSta, coorDes) {
+    const whatIsReturned = traverse(coorSta, coorDes);
+    route.unshift(traverse(coorSta, coorDes));
+
+    if (!whatIsReturned.checkArrEquals(coorSta)) {
+      getRoute(coorSta, route[route.length - 1]);
     }
   }
 
