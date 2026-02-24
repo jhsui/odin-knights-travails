@@ -89,64 +89,67 @@ function knightMoves(coorStart, coorEnd) {
   }
 
   function printResult() {
-    // console.log("bingo!");
+    console.log("bingo!");
   }
 
-  const passedMoves = [];
   const visitedGameboard = [];
   for (let i = 0; i < 8; i++) {
     visitedGameboard.push([]);
   }
 
   const queue = [];
-  const route = [];
 
-  function checkIfIncludesCoor() {}
-  function checkArrEquals() {}
+  const route = []; // doesn't include the end coor
+
+  function checkArrEquals(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return false;
+
+    return (
+      a.length === b.length && a.every((element, index) => element === b[index])
+    );
+  }
+
+  function checkIfIncludesCoor(array, coor) {
+    for (let i = 0; i < array.length; i++) {
+      if (checkArrEquals(array[i], coor)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   function traverse(coor, coorDes) {
-    // if (checkArrEquals(coor, coorEnd)) {
-    //   return coor;
-    // }
+    if (!coor) return;
 
     const nextMoves = possibleMoves(coor);
 
-    if (nextMoves.checkIfIncludesCoor(coorDes)) {
-      // printResult();
+    if (checkIfIncludesCoor(nextMoves, coorDes)) {
       return coor;
     } else {
-      // passedMoves.push(coor);
       visitedGameboard[7 - coor[1]].push(coor[0]);
 
       nextMoves.forEach((c) => {
         if (!visitedGameboard[7 - c[1]].includes(c[0])) {
-          //
           queue.push(c);
         }
       });
 
-      traverse(queue.shift(), coorDes);
+      return traverse(queue.shift(), coorDes);
     }
   }
 
   function getRoute(coorSta, coorDes) {
     const whatIsReturned = traverse(coorSta, coorDes);
-    route.unshift(traverse(coorSta, coorDes));
+    route.unshift(whatIsReturned);
 
-    if (!whatIsReturned.checkArrEquals(coorSta)) {
+    if (!checkArrEquals(coorSta, whatIsReturned)) {
       getRoute(coorSta, route[route.length - 1]);
     }
   }
 
-  function checkNextLayer(arr) {
-    for (let i = 0; i < arr.length; i++) {
-      if (possibleMoves(arr[i]).checkIfIncludesCoor(coorEnd)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
+  getRoute(coorStart, coorEnd);
+  console.log(route);
   printResult();
 }
 
