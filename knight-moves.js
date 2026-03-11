@@ -11,15 +11,16 @@ function knightMoves(coorStart, coorEnd) {
     throw Error;
   } else if (!Number.isInteger(coorEnd[0]) || !Number.isInteger(coorEnd[1])) {
     throw Error;
-  } else if (withinBoard(coorStart)) {
+  } else if (!withinBoard(coorStart)) {
     throw Error;
-  } else if (withinBoard(coorEnd)) {
+  } else if (!withinBoard(coorEnd)) {
     throw Error;
   }
 
   // if the input are the same, output
   if (coorStart[0] === coorEnd[0] && coorStart[1] === coorEnd[1]) {
     printResult();
+    return;
   }
 
   function withinBoard(coor) {
@@ -94,7 +95,7 @@ function knightMoves(coorStart, coorEnd) {
 
   const queue = [];
 
-  const route = []; // doesn't include the end coor
+  const route = []; // doesn't include the end coor and the start coor
 
   // check if two array are the same
   function checkArrEquals(a, b) {
@@ -115,18 +116,24 @@ function knightMoves(coorStart, coorEnd) {
     return false;
   }
 
+  // it returns the coordinate which comes from the coor and has the coorDes as next move
   function traverse(coor, coorDes) {
     if (!coor) return null;
 
     const nextMoves = possibleMoves(coor);
 
+    // is the following line necessary?
     if (nextMoves.length > 0) {
+      // if the current coordinate's next moves contains the destination, return this current coor
       if (checkIfIncludesCoor(nextMoves, coorDes)) {
         return coor;
       } else {
+        // otherwise, mark it as visited on the gameboard
         visitedGameboard[7 - coor[1]].push(coor[0]);
 
+        // for the next layer, try to find if each next move has the destination. 8 * 8
         nextMoves.forEach((c) => {
+          // is the following line necessary?
           if (c !== undefined) {
             if (!visitedGameboard[7 - c[1]].includes(c[0])) {
               visitedGameboard[7 - c[1]].push(c[0]);
@@ -140,12 +147,18 @@ function knightMoves(coorStart, coorEnd) {
     }
   }
 
+  // 1. what is returned is not necessarily accessible by the start coor
+  // 2. fon one step situation, it would go "outward" then go back
   function getRoute(coorSta, coorDes) {
-    const whatIsReturned = traverse(coorSta, coorDes);
-    route.unshift(whatIsReturned);
+    const currentSecondLast = traverse(coorSta, coorDes);
 
-    if (!checkArrEquals(coorSta, whatIsReturned)) {
-      getRoute(coorSta, route[route.length - 1]);
+    // new added line
+    if (!currentSecondLast) return;
+
+    route.unshift(currentSecondLast);
+
+    if (!checkIfIncludesCoor(possibleMoves(coorSta), currentSecondLast)) {
+      getRoute(coorSta, currentSecondLast);
     }
   }
 
@@ -154,4 +167,7 @@ function knightMoves(coorStart, coorEnd) {
   printResult();
 }
 
-knightMoves([0, 1], [0, 0]);
+// knightMoves([0, 1], [0, 0]);
+knightMoves([2, 5], [0, 0]);
+
+// when it comes to [6, 1], there is no next move of [2, 5] could reach it
