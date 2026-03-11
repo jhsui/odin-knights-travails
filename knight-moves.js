@@ -2,7 +2,7 @@ function knightMoves(coorStart, coorEnd) {
   // validate the input coordinates
   if (!Array.isArray(coorStart) || !Array.isArray(coorEnd)) {
     throw Error;
-  } else if (coorStart.length > 2 || coorEnd.length > 2) {
+  } else if (coorStart.length !== 2 || coorEnd.length !== 2) {
     throw Error;
   } else if (
     !Number.isInteger(coorStart[0]) ||
@@ -39,7 +39,7 @@ function knightMoves(coorStart, coorEnd) {
   function possibleMoves(coor) {
     if (!Array.isArray(coor)) {
       throw Error;
-    } else if (coor.length > 2) {
+    } else if (coor.length !== 2) {
       throw Error;
     } else if (!Number.isInteger(coor[0]) || !Number.isInteger(coor[1])) {
       throw Error;
