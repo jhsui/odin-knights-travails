@@ -1,4 +1,5 @@
 function knightMoves(coorStart, coorEnd) {
+  // validate the input coordinates
   if (!Array.isArray(coorStart) || !Array.isArray(coorEnd)) {
     throw Error;
   } else if (coorStart.length > 2 || coorEnd.length > 2) {
@@ -10,25 +11,17 @@ function knightMoves(coorStart, coorEnd) {
     throw Error;
   } else if (!Number.isInteger(coorEnd[0]) || !Number.isInteger(coorEnd[1])) {
     throw Error;
-  } else if (
-    coorStart[0] < 0 ||
-    coorStart[0] > 7 ||
-    coorStart[1] < 0 ||
-    coorStart[1] > 7
-  ) {
+  } else if (withinBoard(coorStart)) {
     throw Error;
-  } else if (
-    coorEnd[0] < 0 ||
-    coorEnd[0] > 7 ||
-    coorEnd[1] < 0 ||
-    coorEnd[1] > 7
-  ) {
+  } else if (withinBoard(coorEnd)) {
     throw Error;
   }
 
+  // if the input are the same, output
   if (coorStart[0] === coorEnd[0] && coorStart[1] === coorEnd[1]) {
     printResult();
   }
+
   function withinBoard(coor) {
     if (coor[0] < 0 || coor[0] > 7) {
       return false;
@@ -41,6 +34,7 @@ function knightMoves(coorStart, coorEnd) {
     return true;
   }
 
+  // return an array of all the possible next moves
   function possibleMoves(coor) {
     if (!Array.isArray(coor)) {
       throw Error;
@@ -48,7 +42,7 @@ function knightMoves(coorStart, coorEnd) {
       throw Error;
     } else if (!Number.isInteger(coor[0]) || !Number.isInteger(coor[1])) {
       throw Error;
-    } else if (coor[0] < 0 || coor[0] > 7 || coor[1] < 0 || coor[1] > 7) {
+    } else if (!withinBoard(coor)) {
       throw Error;
     }
 
@@ -89,6 +83,7 @@ function knightMoves(coorStart, coorEnd) {
   }
 
   function printResult() {
+    //
     console.log("bingo!");
   }
 
@@ -101,6 +96,7 @@ function knightMoves(coorStart, coorEnd) {
 
   const route = []; // doesn't include the end coor
 
+  // check if two array are the same
   function checkArrEquals(a, b) {
     if (!Array.isArray(a) || !Array.isArray(b)) return false;
 
@@ -120,22 +116,27 @@ function knightMoves(coorStart, coorEnd) {
   }
 
   function traverse(coor, coorDes) {
-    if (!coor) return;
+    if (!coor) return null;
 
     const nextMoves = possibleMoves(coor);
 
-    if (checkIfIncludesCoor(nextMoves, coorDes)) {
-      return coor;
-    } else {
-      visitedGameboard[7 - coor[1]].push(coor[0]);
+    if (nextMoves.length > 0) {
+      if (checkIfIncludesCoor(nextMoves, coorDes)) {
+        return coor;
+      } else {
+        visitedGameboard[7 - coor[1]].push(coor[0]);
 
-      nextMoves.forEach((c) => {
-        if (!visitedGameboard[7 - c[1]].includes(c[0])) {
-          queue.push(c);
-        }
-      });
+        nextMoves.forEach((c) => {
+          if (c !== undefined) {
+            if (!visitedGameboard[7 - c[1]].includes(c[0])) {
+              visitedGameboard[7 - c[1]].push(c[0]);
+              queue.push(c);
+            }
+          }
+        });
 
-      return traverse(queue.shift(), coorDes);
+        return traverse(queue.shift(), coorDes);
+      }
     }
   }
 
