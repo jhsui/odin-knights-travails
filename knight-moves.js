@@ -17,6 +17,10 @@ function knightMoves(coorStart, coorEnd) {
     throw Error;
   }
 
+  function printResult() {
+    console.log("bingo!");
+  }
+
   // if the input are the same, output
   if (coorStart[0] === coorEnd[0] && coorStart[1] === coorEnd[1]) {
     printResult();
@@ -83,10 +87,7 @@ function knightMoves(coorStart, coorEnd) {
     return moves;
   }
 
-  function printResult() {
-    //
-    console.log("bingo!");
-  }
+  /*
 
   const visitedGameboard = [];
   for (let i = 0; i < 8; i++) {
@@ -115,6 +116,8 @@ function knightMoves(coorStart, coorEnd) {
 
     return false;
   }
+  
+  */
 
   // it returns the coordinate which comes from the coor and has the coorDes as next move
   function traverse(coor, coorDes) {
@@ -166,8 +169,3 @@ function knightMoves(coorStart, coorEnd) {
   console.log(route);
   printResult();
 }
-
-// knightMoves([0, 1], [0, 0]);
-knightMoves([2, 5], [0, 0]);
-
-// when it comes to [6, 1], there is no next move of [2, 5] could reach it
