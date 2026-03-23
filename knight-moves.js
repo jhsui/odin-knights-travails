@@ -17,13 +17,13 @@ function knightMoves(coorStart, coorEnd) {
     throw Error;
   }
 
-  /*
-  // if the input are the same, output
+  // if the input are the same
   if (coorStart[0] === coorEnd[0] && coorStart[1] === coorEnd[1]) {
-    printResult();
+    console.log();
+    console.log("You made it in 0 moves! Here is your path:");
+    console.log(coorStart);
     return;
   }
-  */
 
   function withinBoard(coor) {
     if (coor[0] < 0 || coor[0] > 7) {
@@ -120,13 +120,13 @@ function knightMoves(coorStart, coorEnd) {
     return true;
   }
 
+  function key(coor) {
+    return `${coor[0]},${coor[1]}`;
+  }
+
   // one time breath first traversal
   function traverse(coStart, coEnd) {
     const nextMoves = possibleMoves(coStart);
-
-    // if (nextMoves.length == 0) {
-    //   return;
-    // }
 
     if (nextMoves.length === 0) {
       const next = queue.shift();
@@ -137,7 +137,7 @@ function knightMoves(coorStart, coorEnd) {
     }
 
     for (const c of nextMoves) {
-      parentMap.set(c, coStart);
+      parentMap.set(key(c), coStart);
     }
 
     if (checkIfArrContainsCoor(nextMoves, coEnd)) {
@@ -173,19 +173,16 @@ function knightMoves(coorStart, coorEnd) {
 
   result.push(final);
 
-  while (parentMap.has(result[result.length - 1])) {
-    const key = result[result.length - 1];
-    result.push(parentMap.get(key));
+  while (parentMap.has(key(result[result.length - 1]))) {
+    result.push(parentMap.get(key(result[result.length - 1])));
   }
 
   console.log();
-  console.log(
-    "You made it in " + (result.length - 1) + " moves! Here is your path:",
-  );
+  console.log(`You made it in ${result.length - 1} moves! Here is your path:`);
   for (let i = result.length - 1; i >= 0; i--) {
     console.log(result[i]);
   }
 }
 
-knightMoves([0, 0], [7, 7]);
+knightMoves([0, 0], [7, 1]);
 // knightMoves([0, 0], [5, 3]);
