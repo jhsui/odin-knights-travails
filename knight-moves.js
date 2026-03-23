@@ -128,14 +128,6 @@ function knightMoves(coorStart, coorEnd) {
   function traverse(coStart, coEnd) {
     const nextMoves = possibleMoves(coStart);
 
-    if (nextMoves.length === 0) {
-      const next = queue.shift();
-      if (next === undefined) {
-        return;
-      }
-      return traverse(next, coEnd);
-    }
-
     for (const c of nextMoves) {
       parentMap.set(key(c), coStart);
     }
@@ -162,8 +154,13 @@ function knightMoves(coorStart, coorEnd) {
         }
       }
 
-      const next = queue.shift();
-      return traverse(next, coEnd);
+      while (queue.length > 0) {
+        const next = queue.shift();
+        const found = traverse(next, coEnd);
+        if (found !== undefined) {
+          return found;
+        }
+      }
     }
   }
 
@@ -184,5 +181,5 @@ function knightMoves(coorStart, coorEnd) {
   }
 }
 
-knightMoves([0, 0], [7, 1]);
-// knightMoves([0, 0], [5, 3]);
+// knightMoves([0, 0], [7, 7]);
+knightMoves([0, 0], [5, 3]);
