@@ -17,11 +17,6 @@ function knightMoves(coorStart, coorEnd) {
     throw Error;
   }
 
-  function printResult() {
-    //
-    console.log("bingo!");
-  }
-
   /*
   // if the input are the same, output
   if (coorStart[0] === coorEnd[0] && coorStart[1] === coorEnd[1]) {
@@ -155,12 +150,18 @@ function knightMoves(coorStart, coorEnd) {
       // no one in the next move is the end.
 
       // mark it as visited
-      visitedCoor[7 - coStart[1]].push(coStart[0]);
+      if (!visitedCoor[7 - coStart[1]].includes(coStart[0])) {
+        visitedCoor[7 - coStart[1]].push(coStart[0]);
+      }
 
       // push into queue
-      queue.push(...nextMoves);
+      for (const c of nextMoves) {
+        queue.push(c);
+        if (!visitedCoor[7 - c[1]].includes(c[0])) {
+          visitedCoor[7 - c[1]].push(c[0]);
+        }
+      }
 
-      // what's next?
       const next = queue.shift();
       return traverse(next, coEnd);
     }
