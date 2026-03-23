@@ -129,8 +129,16 @@ function knightMoves(coorStart, coorEnd) {
   function traverse(coStart, coEnd) {
     const nextMoves = possibleMoves(coStart);
 
-    if (nextMoves.length == 0) {
-      return;
+    // if (nextMoves.length == 0) {
+    //   return;
+    // }
+
+    if (nextMoves.length === 0) {
+      const next = queue.shift();
+      if (next === undefined) {
+        return;
+      }
+      return traverse(next, coEnd);
     }
 
     for (const c of nextMoves) {
@@ -169,10 +177,14 @@ function knightMoves(coorStart, coorEnd) {
     result.push(parentMap.get(key));
   }
 
+  console.log();
+  console.log(
+    "You made it in " + (result.length - 1) + " moves! Here is your path:",
+  );
   for (let i = result.length - 1; i >= 0; i--) {
     console.log(result[i]);
   }
 }
 
-// knightMoves([0, 0], [7, 7]);
-knightMoves([0, 0], [5, 3]);
+knightMoves([0, 0], [7, 7]);
+// knightMoves([0, 0], [5, 3]);
