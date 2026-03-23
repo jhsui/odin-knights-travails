@@ -18,14 +18,17 @@ function knightMoves(coorStart, coorEnd) {
   }
 
   function printResult() {
+    //
     console.log("bingo!");
   }
 
+  /*
   // if the input are the same, output
   if (coorStart[0] === coorEnd[0] && coorStart[1] === coorEnd[1]) {
     printResult();
     return;
   }
+  */
 
   function withinBoard(coor) {
     if (coor[0] < 0 || coor[0] > 7) {
@@ -39,7 +42,8 @@ function knightMoves(coorStart, coorEnd) {
     return true;
   }
 
-  // return an array of all the possible next moves
+  // return an array of coordinates of all the possible next moves
+  // (x, y) from 0 ~ 7
   function possibleMoves(coor) {
     if (!Array.isArray(coor)) {
       throw Error;
@@ -51,7 +55,8 @@ function knightMoves(coorStart, coorEnd) {
       throw Error;
     }
 
-    const moves = [];
+    let moves = [];
+
     if (withinBoard([coor[0] + 1, coor[1] + 2])) {
       moves.push([coor[0] + 1, coor[1] + 2]);
     }
@@ -84,88 +89,90 @@ function knightMoves(coorStart, coorEnd) {
       moves.push([coor[0] - 1, coor[1] + 2]);
     }
 
+    moves = moves.filter((c) => !visitedCoor[7 - c[1]].includes(c[0]));
+
     return moves;
   }
 
-  /*
+  // use to track one coordinate's parent (last step)
+  // key = current coor, value = its parent
+  const parentMap = new Map();
 
-  const visitedGameboard = [];
-  for (let i = 0; i < 8; i++) {
-    visitedGameboard.push([]);
-  }
+  // use to track visited coordinates
+  const visitedCoor = [[], [], [], [], [], [], [], []];
 
+  // use to track next coor to be processed
   const queue = [];
 
-  const route = []; // doesn't include the end coor and the start coor
-
-  // check if two array are the same
-  function checkArrEquals(a, b) {
-    if (!Array.isArray(a) || !Array.isArray(b)) return false;
-
-    return (
-      a.length === b.length && a.every((element, index) => element === b[index])
-    );
-  }
-
-  function checkIfIncludesCoor(array, coor) {
-    for (let i = 0; i < array.length; i++) {
-      if (checkArrEquals(array[i], coor)) {
+  // check if the array contains the coor
+  function checkIfArrContainsCoor(arr, coor) {
+    for (const c of arr) {
+      if (checkIfTwoArrSame(c, coor)) {
         return true;
       }
     }
 
     return false;
   }
-  
-  */
 
-  // it returns the coordinate which comes from the coor and has the coorDes as next move
-  function traverse(coor, coorDes) {
-    if (!coor) return null;
+  function checkIfTwoArrSame(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
 
-    const nextMoves = possibleMoves(coor);
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) return false;
+    }
 
-    // is the following line necessary?
-    if (nextMoves.length > 0) {
-      // if the current coordinate's next moves contains the destination, return this current coor
-      if (checkIfIncludesCoor(nextMoves, coorDes)) {
-        return coor;
-      } else {
-        // otherwise, mark it as visited on the gameboard
-        visitedGameboard[7 - coor[1]].push(coor[0]);
+    return true;
+  }
 
-        // for the next layer, try to find if each next move has the destination. 8 * 8
-        nextMoves.forEach((c) => {
-          // is the following line necessary?
-          if (c !== undefined) {
-            if (!visitedGameboard[7 - c[1]].includes(c[0])) {
-              visitedGameboard[7 - c[1]].push(c[0]);
-              queue.push(c);
-            }
-          }
-        });
+  // one time breath first traversal
+  function traverse(coStart, coEnd) {
+    const nextMoves = possibleMoves(coStart);
 
-        return traverse(queue.shift(), coorDes);
+    if (nextMoves.length == 0) {
+      return;
+    }
+
+    for (const c of nextMoves) {
+      parentMap.set(c, coStart);
+    }
+
+    if (checkIfArrContainsCoor(nextMoves, coEnd)) {
+      for (const c of nextMoves) {
+        if (checkIfTwoArrSame(c, coEnd)) {
+          return c;
+        }
       }
+    } else {
+      // no one in the next move is the end.
+
+      // mark it as visited
+      visitedCoor[7 - coStart[1]].push(coStart[0]);
+
+      // push into queue
+      queue.push(...nextMoves);
+
+      // what's next?
+      const next = queue.shift();
+      return traverse(next, coEnd);
     }
   }
 
-  // 1. what is returned is not necessarily accessible by the start coor
-  // 2. fon one step situation, it would go "outward" then go back
-  function getRoute(coorSta, coorDes) {
-    const currentSecondLast = traverse(coorSta, coorDes);
+  const final = traverse(coorStart, coorEnd);
 
-    // new added line
-    if (!currentSecondLast) return;
+  const result = [];
 
-    route.unshift(currentSecondLast);
+  result.push(final);
 
-    if (!checkIfIncludesCoor(possibleMoves(coorSta), currentSecondLast)) {
-      getRoute(coorSta, currentSecondLast);
-    }
+  while (parentMap.has(result[result.length - 1])) {
+    const key = result[result.length - 1];
+    result.push(parentMap.get(key));
   }
 
-  getRoute(coorStart, coorEnd);
-  console.log(route);
-  printResult();
+  for (let i = result.length - 1; i >= 0; i--) {
+    console.log(result[i]);
+  }
 }
+
+// knightMoves([0, 0], [7, 7]);
+knightMoves([0, 0], [5, 3]);
